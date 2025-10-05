@@ -2,43 +2,56 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Cake Order Form</title>
+    <title>Event Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body class="bg-gray-50 min-h-screen flex items-center justify-center">
     <form class="bg-white p-8 rounded shadow-md w-full max-w-md space-y-6">
       <div>
-        <label for="cakeName" class="block text-gray-700 font-semibold mb-2"
-          >Cake Name:</label
+        <label for="eventName" class="block text-gray-700 font-semibold mb-2"
+          >Event Name:</label
         >
         <input
           type="text"
-          id="cakeName"
-          placeholder="e.g., Black Forest"
+          id="eventName"
+          name="eventName"
           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
       <div>
-        <label for="frostingType" class="block text-gray-700 font-semibold mb-2"
-          >Frosting Type:</label
+        <label for="artist" class="block text-gray-700 font-semibold mb-2"
+          >Artist:</label
         >
         <input
           type="text"
-          id="frostingType"
-          placeholder="e.g., Cream Cheese"
+          id="artist"
+          name="artist"
           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
       <div>
-        <label for="instructions" class="block text-gray-700 font-semibold mb-2"
-          >Special Instructions:</label
+        <label
+          for="eventLocation"
+          class="block text-gray-700 font-semibold mb-2"
+          >Event Location:</label
         >
         <input
           type="text"
-          id="instructions"
-          placeholder="e.g., Extra sprinkles"
+          id="eventLocation"
+          name="eventLocation"
           class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
+      </div>
+      <div>
+        <label for="description" class="block text-gray-700 font-semibold mb-2"
+          >Description:</label
+        >
+        <textarea
+          id="description"
+          name="description"
+          class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          rows="4"
+        ></textarea>
       </div>
     </form>
     <script type="module" src="script.js"></script>

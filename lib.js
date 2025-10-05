@@ -1,7 +1,7 @@
 // Helpers
 // ---------------
-const TYPING_DELAYS = [50, 75, 100, 150, 200];
-const FIELD_DELAYS = [300, 400, 500];
+const TYPING_DELAYS = [10, 25, 50, 75, 100, 150];
+const FIELD_DELAYS = [300, 400];
 
 const pick = array => {
   const randomIndex = Math.floor(Math.random() * array.length);
