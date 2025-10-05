@@ -10,13 +10,7 @@ const pick = array => {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const typeIntoInput = async (elementId, text) => {
-  const el = document.getElementById(elementId);
-
-  if (!el) {
-    throw new Error(`Input element with ID '${elementId}' not found`);
-  }
-
+const typeIntoInput = async ({ el, text }) => {
   el.value = '';
 
   for (const char of text) {
@@ -28,18 +22,18 @@ const typeIntoInput = async (elementId, text) => {
 
 export const typewriter = async list => {
   for (let i = 0; i < list.length; i++) {
-    const item = list[i];
-    const el = document.getElementById(item.id);
+    const { get, ...rest } = list[i];
+    const el = get();
 
     if (!el) {
-      console.error(`Input element with ID '${item.id}' not found. Skipping.`);
+      console.error('Input element not found. Skipping.', rest);
       continue;
     }
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     el.focus();
 
-    await typeIntoInput(item.id, item.text);
+    await typeIntoInput({ el, ...rest });
     await delay(pick(FIELD_DELAYS));
   }
 };
