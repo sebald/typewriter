@@ -15,4 +15,9 @@ const INPUT_DATA = [
   },
 ];
 
-document.addEventListener('DOMContentLoaded', () => typewriter(INPUT_DATA));
+window.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'e') {
+    e.preventDefault();
+    typewriter(INPUT_DATA);
+  }
+});
