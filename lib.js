@@ -10,16 +10,18 @@ const pick = array => {
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+const scrollTo = async ({ el, value }) => {
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  await delay(value);
+};
+
 // Interaction Map
 // ---------------
 const interactions = {
-  scroll: async ({ el, value }) => {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    await delay(value);
-  },
+  scroll: scrollTo,
 
   text: async ({ el, value }) => {
-    await interactions.scroll({ el, value: pick(FIELD_DELAYS) });
+    await scrollTo({ el, value: pick(FIELD_DELAYS) });
     el.focus();
     el.value = '';
 
@@ -27,13 +29,12 @@ const interactions = {
       el.value += char;
       el.dispatchEvent(new Event('input', { bubbles: true }));
       const isTextarea = el.tagName === 'TEXTAREA';
-      const delayMs = pick(TYPING_DELAYS) / (isTextarea ? 2 : 1);
-      await delay(delayMs);
+      await delay(pick(TYPING_DELAYS) / (isTextarea ? 2 : 1));
     }
   },
 
   select: async ({ el, value }) => {
-    await interactions.scroll({ el, value: pick(FIELD_DELAYS) });
+    await scrollTo({ el, value: pick(FIELD_DELAYS) });
     el.focus();
 
     // Find the option that matches the value
@@ -48,9 +49,6 @@ const interactions = {
       return;
     }
 
-    // Add visual delay to simulate thinking/searching
-    await delay(pick(TYPING_DELAYS) * 3);
-
     el.value = option.value;
     el.dispatchEvent(new Event('change', { bubbles: true }));
   },
@@ -63,7 +61,7 @@ const interactions = {
   },
 
   check: async ({ el, value }) => {
-    await interactions.scroll({ el, value: pick(FIELD_DELAYS) });
+    await scrollTo({ el, value: pick(FIELD_DELAYS) });
     el.focus();
 
     await delay(pick(TYPING_DELAYS) * 2);
@@ -73,7 +71,7 @@ const interactions = {
   },
 
   date: async ({ el, value }) => {
-    await interactions.scroll({ el, value: pick(FIELD_DELAYS) });
+    await scrollTo({ el, value: pick(FIELD_DELAYS) });
     el.focus();
 
     await delay(pick(TYPING_DELAYS) * 2);
@@ -85,8 +83,7 @@ const interactions = {
 // Main Typewriter Function
 // ---------------
 export const typewriter = async list => {
-  for (let i = 0; i < list.length; i++) {
-    const { get, type, value } = list[i];
+  for (const { get, type, value } of list) {
     const el = await get();
 
     if (!el) {
