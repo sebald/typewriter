@@ -4,43 +4,51 @@ const INPUT_DATA = [
   // Text input example
   {
     get: () => document.querySelector('input[name="eventName"]'),
-    text: 'Shell Shocked Music Fest 2024',
+    type: 'text',
+    value: 'Shell Shocked Music Fest 2024',
   },
 
   // Text input example
   {
     get: () => document.querySelector('input[name="artist"]'),
-    text: 'The Groovy Turtles',
+    type: 'text',
+    value: 'The Groovy Turtles',
   },
 
   // Select dropdown example
   {
     get: () => document.querySelector('select[name="eventType"]'),
-    select: 'festival',
+    type: 'select',
+    value: 'festival',
   },
 
   // Text input example
   {
     get: () => document.querySelector('input[name="eventLocation"]'),
-    text: 'Turtle Bay Amphitheater',
+    type: 'text',
+    value: 'Turtle Bay Amphitheater',
   },
 
   // Checkbox example - enable
   {
     get: () => document.querySelector('input[name="musicProvided"]'),
-    check: true,
+    type: 'check',
+    value: true,
   },
 
-  // Checkbox example - disable (if there was another checkbox)
+  // Checkbox example - disable
   {
     get: () => document.querySelector('input[name="outdoorVenue"]'),
-    check: false,
+    type: 'check',
+    value: false,
   },
 
   // Textarea example
   {
     get: () => document.querySelector('textarea[name="description"]'),
-    text: 'Slow down and jam out with us at the Shell Shocked Music Fest! Enjoy a night of toe-tapping tunes, turtle-themed treats, and shell-abrations with The Groovy Turtles.',
+    type: 'text',
+    value:
+      'Slow down and jam out with us at the Shell Shocked Music Fest! Enjoy a night of toe-tapping tunes, turtle-themed treats, and shell-abrations with The Groovy Turtles.',
   },
 ];
 

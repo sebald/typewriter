@@ -12,7 +12,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // Emulate User Interactions
 // ---------------
-const type = async ({ el, text }) => {
+const typeText = async ({ el, text }) => {
   el.focus();
   el.value = '';
 
@@ -72,72 +72,58 @@ const setDate = async ({ el, date }) => {
   el.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
-const processElement = async ({
-  el,
-  text,
-  select,
-  chosen,
-  check,
-  scroll,
-  date,
-}) => {
-  // Handle text input (input, textarea)
-  if (text !== undefined) {
-    await type({ el, text });
-    return;
-  }
+const processElement = async ({ el, type, value }) => {
+  switch (type) {
+    case 'text':
+      await typeText({ el, text: value });
+      break;
 
-  // Handle select elements
-  if (select !== undefined) {
-    await choose({ el, select });
-    return;
-  }
+    case 'select':
+      await choose({ el, select: value });
+      break;
 
-  // Handle chosen elements
-  if (chosen !== undefined) {
-    await chooosen({ el, select: chosen });
-    return;
-  }
+    case 'chosen':
+      await chooosen({ el, select: value });
+      break;
 
-  // Handle checkbox elements
-  if (check !== undefined) {
-    await toggle({ el, check });
-    return;
-  }
+    case 'check':
+      await toggle({ el, check: value });
+      break;
 
-  // Handle scrolling to an element
-  if (scroll !== undefined) {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    await delay(scroll);
-    return;
-  }
+    case 'scroll':
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      await delay(value);
+      break;
 
-  // Handle date input
-  if (date !== undefined) {
-    await setDate({ el, date });
-    return;
-  }
+    case 'date':
+      await setDate({ el, date: value });
+      break;
 
-  console.error(
-    'No valid action specified. Use "text", "select", or "check" property.'
-  );
+    default:
+      console.error(
+        `Unknown interaction type "${type}". Supported types: text, select, chosen, check, scroll, date`
+      );
+  }
 };
 
 // Main Typewriter Function
 // ---------------
 export const typewriter = async list => {
   for (let i = 0; i < list.length; i++) {
-    const { get, ...rest } = list[i];
+    const { get, type, value } = list[i];
     const el = await get();
 
     if (!el) {
-      console.error('Element not found. Skipping.', rest);
+      console.error('Element not found. Skipping.', { type, value });
       continue;
     }
 
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Auto-scroll to element (unless it's a scroll-only action)
+    if (type !== 'scroll') {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 
-    await processElement({ el, ...rest });
+    await processElement({ el, type, value });
 
     // Add pause between fields (except for the last one)
     if (i < list.length - 1) {
