@@ -70,7 +70,7 @@ const interactions = {
     el.dispatchEvent(new Event('change', { bubbles: true }));
   },
 
-  date: async ({ el, value }) => {
+  datetime: async ({ el, value }) => {
     await scrollTo({ el, value: pick(FIELD_DELAYS) });
     el.focus();
 
