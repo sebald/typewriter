@@ -12,11 +12,12 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // Emulate User Interactions
 // ---------------
-const typeText = async ({ el, text }) => {
+const interactText = async ({ el, value }) => {
+  await interactScroll({ el, value: pick(FIELD_DELAYS) });
   el.focus();
   el.value = '';
 
-  for (const char of text) {
+  for (const char of value) {
     el.value += char;
     el.dispatchEvent(new Event('input', { bubbles: true }));
     const isTextarea = el.tagName === 'TEXTAREA';
@@ -25,17 +26,18 @@ const typeText = async ({ el, text }) => {
   }
 };
 
-const choose = async ({ el, select }) => {
+const interactSelect = async ({ el, value }) => {
+  await interactScroll({ el, value: pick(FIELD_DELAYS) });
   el.focus();
 
   // Find the option that matches the value
   const option =
-    el.querySelector(`option[value="${select}"]`) ||
-    Array.from(el.options).find(opt => opt.textContent.trim() === select);
+    el.querySelector(`option[value="${value}"]`) ||
+    Array.from(el.options).find(opt => opt.textContent.trim() === value);
 
   if (!option) {
     console.error(
-      `Option with value or text "${select}" not found in select element`
+      `Option with value or text "${value}" not found in select element`
     );
     return;
   }
@@ -48,55 +50,61 @@ const choose = async ({ el, select }) => {
 };
 
 // When chosen.js is used
-const chooosen = async ({ el, select }) => {
-  await choose({ el, select });
+const interactChosen = async ({ el, value }) => {
+  await interactSelect({ el, value });
   if (jQuery) {
     jQuery(el).trigger('chosen:updated');
   }
 };
 
-const toggle = async ({ el, check }) => {
+const interactCheck = async ({ el, value }) => {
+  await interactScroll({ el, value: pick(FIELD_DELAYS) });
   el.focus();
 
   await delay(pick(TYPING_DELAYS) * 2);
 
-  el.checked = check;
+  el.checked = value;
   el.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
-const setDate = async ({ el, date }) => {
+const interactDate = async ({ el, value }) => {
+  await interactScroll({ el, value: pick(FIELD_DELAYS) });
   el.focus();
 
   await delay(pick(TYPING_DELAYS) * 2);
-  el.value = date;
+  el.value = value;
   el.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
+const interactScroll = async ({ el, value }) => {
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  await delay(value);
 };
 
 const processElement = async ({ el, type, value }) => {
   switch (type) {
     case 'text':
-      await typeText({ el, text: value });
+      await interactText({ el, value });
       break;
 
     case 'select':
-      await choose({ el, select: value });
+      await interactSelect({ el, value });
       break;
 
     case 'chosen':
-      await chooosen({ el, select: value });
+      await interactChosen({ el, value });
       break;
 
     case 'check':
-      await toggle({ el, check: value });
+      await interactCheck({ el, value });
       break;
 
     case 'scroll':
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      await delay(value);
+      await interactScroll({ el, value });
       break;
 
     case 'date':
-      await setDate({ el, date: value });
+      await interactDate({ el, value });
       break;
 
     default:
@@ -118,16 +126,6 @@ export const typewriter = async list => {
       continue;
     }
 
-    // Auto-scroll to element (unless it's a scroll-only action)
-    if (type !== 'scroll') {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     await processElement({ el, type, value });
-
-    // Add pause between fields (except for the last one)
-    if (i < list.length - 1) {
-      await delay(pick(FIELD_DELAYS));
-    }
   }
 };
