@@ -13,6 +13,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 // Emulate User Interactions
 // ---------------
 const type = async ({ el, text }) => {
+  el.focus();
   el.value = '';
 
   for (const char of text) {
@@ -25,6 +26,8 @@ const type = async ({ el, text }) => {
 };
 
 const choose = async ({ el, select }) => {
+  el.focus();
+
   // Find the option that matches the value
   const option =
     el.querySelector(`option[value="${select}"]`) ||
@@ -44,14 +47,24 @@ const choose = async ({ el, select }) => {
   el.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
+// When chosen.js is used
+const chooosen = async ({ el, select }) => {
+  await choose({ el, select });
+  if (jQuery) {
+    jQuery(el).trigger('chosen:updated');
+  }
+};
+
 const toggle = async ({ el, check }) => {
+  el.focus();
+
   await delay(pick(TYPING_DELAYS) * 2);
 
   el.checked = check;
   el.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
-const processElement = async ({ el, text, select, check }) => {
+const processElement = async ({ el, text, select, chosen, check, scroll }) => {
   // Handle text input (input, textarea)
   if (text !== undefined) {
     await type({ el, text });
@@ -64,9 +77,23 @@ const processElement = async ({ el, text, select, check }) => {
     return;
   }
 
+  // Handle chosen elements
+  if (chosen !== undefined) {
+    await chooosen({ el, select: chosen });
+    return;
+  }
+
   // Handle checkbox elements
   if (check !== undefined) {
     await toggle({ el, check });
+    return;
+  }
+
+  // Handle scrolling to an element
+  if (scroll !== undefined) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    console.log(scroll);
+    await delay(scroll);
     return;
   }
 
@@ -80,7 +107,7 @@ const processElement = async ({ el, text, select, check }) => {
 export const typewriter = async list => {
   for (let i = 0; i < list.length; i++) {
     const { get, ...rest } = list[i];
-    const el = get();
+    const el = await get();
 
     if (!el) {
       console.error('Element not found. Skipping.', rest);
@@ -88,7 +115,6 @@ export const typewriter = async list => {
     }
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    el.focus();
 
     await processElement({ el, ...rest });
 
