@@ -64,7 +64,23 @@ const toggle = async ({ el, check }) => {
   el.dispatchEvent(new Event('change', { bubbles: true }));
 };
 
-const processElement = async ({ el, text, select, chosen, check, scroll }) => {
+const setDate = async ({ el, date }) => {
+  el.focus();
+
+  await delay(pick(TYPING_DELAYS) * 2);
+  el.value = date;
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+};
+
+const processElement = async ({
+  el,
+  text,
+  select,
+  chosen,
+  check,
+  scroll,
+  date,
+}) => {
   // Handle text input (input, textarea)
   if (text !== undefined) {
     await type({ el, text });
@@ -92,8 +108,13 @@ const processElement = async ({ el, text, select, chosen, check, scroll }) => {
   // Handle scrolling to an element
   if (scroll !== undefined) {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    console.log(scroll);
     await delay(scroll);
+    return;
+  }
+
+  // Handle date input
+  if (date !== undefined) {
+    await setDate({ el, date });
     return;
   }
 
